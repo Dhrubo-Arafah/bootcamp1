@@ -54,7 +54,9 @@ class Post
     {
         // Create query
         $query = 'select * from ' . $this->table . ' where ' . $this->table . '.category_id = :id';
-//var_dump($query);
+
+        //var_dump($query);
+
         // Prepare statement
         $stmt = $this->db->prepare($query);
 
@@ -138,4 +140,21 @@ class Post
             return false;
         }
     }
+
+//Delete Post
+public function delete($id){
+
+    // Create query
+    $query = 'delete from ' . $this->table . ' where ' . $this->table . '.id = :id';
+
+    // Prepare statement
+    $stmt = $this->db->prepare($query);
+
+    // Execute statement
+    if($stmt->execute([':id' => $id])){
+        return "Deleted Successfully";
+    }else{
+        return "Delete wasn't executed";
+    }
+}
 }
