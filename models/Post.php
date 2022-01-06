@@ -44,4 +44,18 @@ class Post{
         // Returning Fetched Data
         return $stmt;
      }
+
+    public function search($id){
+        // Create query
+        $query = 'select * from '.  $this->table . ' where ' . $this->table . '.category_id = :id';
+//var_dump($query);
+        // Prepare statement
+        $stmt = $this->db->prepare($query);
+
+        // Execute statement
+        $stmt->execute([':id'=>$id]);
+
+        // Returning Fetched Data
+        return $stmt;
+    }
 }
