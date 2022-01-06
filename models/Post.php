@@ -1,5 +1,7 @@
 <?php
-class Post{
+
+class Post
+{
     private $db;
     private $table = 'posts';
 
@@ -13,12 +15,14 @@ class Post{
     public $created_at;
 
     //constructor to load DB
-    public function __construct($db){
+    public function __construct($db)
+    {
         $this->db = $db;
     }
 
     //Get Posts
-    public function read(){
+    public function read()
+    {
         // Create query
         $query = 'SELECT 
         c.name as category_name,
@@ -29,7 +33,7 @@ class Post{
         p.author,
         p.created_at
         FROM
-        ' . $this->table. ' p
+        ' . $this->table . ' p
         LEFT JOIN
         categories c ON p.category_id = c.id
         ORDER BY
@@ -43,19 +47,56 @@ class Post{
 
         // Returning Fetched Data
         return $stmt;
-     }
+    }
 
-    public function search($id){
+    public function search($id)
+    {
         // Create query
-        $query = 'select * from '.  $this->table . ' where ' . $this->table . '.category_id = :id';
+        $query = 'select * from ' . $this->table . ' where ' . $this->table . '.category_id = :id';
 //var_dump($query);
         // Prepare statement
         $stmt = $this->db->prepare($query);
 
         // Execute statement
-        $stmt->execute([':id'=>$id]);
+        $stmt->execute([':id' => $id]);
 
         // Returning Fetched Data
         return $stmt;
+    }
+
+    //Create Post
+    public function create()
+    {
+        //Create Query
+        $query = 'INSERT INTO ' . $this->table . ' 
+        SET
+        title = :title,
+        body = :body,
+        author = :author,
+        category_id = :category_id
+        ';
+
+        //Prepare statement
+        $stmt = $this->db->prepare($query);
+
+        //Clean Data
+        $this->title = htmlspecialchars(strip_tags($this->title));
+        $this->body = htmlspecialchars(strip_tags($this->body));
+        $this->author = htmlspecialchars(strip_tags($this->author));
+        $this->category_id = htmlspecialchars(strip_tags($this->category_id));
+
+        // Bind data
+        $stmt->bindParam(':title', $this->title);
+        $stmt->bindParam(':body', $this->body);
+        $stmt->bindParam(':author', $this->author);
+        $stmt->bindParam(':category_id', $this->category_id);
+        $stmt->execute();
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            printf("Error: %s.\n", $stmt->error);
+
+            return false;
+        }
     }
 }
